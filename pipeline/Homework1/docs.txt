@@ -1,0 +1,100 @@
+    SELECT COUNT(*) AS trips_le_1_mile
+FROM green_taxi_data
+WHERE lpep_pickup_datetime >= '2025-11-01'
+  AND lpep_pickup_datetime <  '2025-12-01'
+  AND trip_distance <= 1;
+
+  SELECT
+    DATE(lpep_pickup_datetime) AS pickup_day,
+    trip_distance
+FROM green_taxi_data
+WHERE trip_distance < 100
+ORDER BY trip_distance DESC
+LIMIT 1;
+
+docker run -it --rm \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="ny_taxi" \
+  -v ny_taxi_postgres_data:/var/lib/postgresql \
+  -p 5433:5432 \
+  postgres:18
+
+docker run -it \
+  --network=pipeline_default \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --target-table=yellow_taxi_trips_2021_2 \
+    --year=2021 \
+    --month=2 \
+    --chunksize=100000
+
+    docker run -it \
+  --network=pipeline_default \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --target-table=green_taxi_data \
+    --year=2025 \
+    --month=11 \
+    --chunksize=100000
+
+     docker run -it \
+  --network=pipeline_default \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --target-table=green_taxi_data \
+    --chunksize=100000
+
+    docker run -it \
+  --network=pipeline_default \
+  -v $(pwd):/app \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --target-table=green_taxi_data \
+    --chunksize=100000
+
+    docker run -it \
+  --network=pipeline_default \
+  -v F:/VSCODE/data-engineering-2026/pipeline/data:/app/data \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --target-table=green_taxi_data \
+    --chunksize=100000
+
+docker run -it \
+  --network=pipeline_default \
+  -v F:/VSCODE/data-engineering-2026/pipeline/data:/app/data \
+  taxi_ingest:v001 \
+    --pg-user=root \
+    --pg-pass=root \
+    --pg-host=pgdatabase \
+    --pg-port=5432 \
+    --pg-db=ny_taxi \
+    --chunksize=10000
+
+
+python -m pip --version
+
+
+docker build --no-cache -t taxi_ingest:v001 .
+docker build -t taxi_ingest:v001 .
