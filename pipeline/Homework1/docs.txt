@@ -12,6 +12,33 @@ WHERE trip_distance < 100
 ORDER BY trip_distance DESC
 LIMIT 1;
 
+SELECT
+    dz."Zone" AS dropoff_zone,
+    MAX(t.tip_amount) AS max_tip
+FROM green_taxi_data t
+JOIN taxi_zone_lookup pz
+    ON t."PULocationID" = pz."LocationID"
+JOIN taxi_zone_lookup dz
+    ON t."DOLocationID" = dz."LocationID"
+WHERE
+    pz."Zone" = 'East Harlem North'
+    AND t.lpep_pickup_datetime >= '2025-11-01'
+    AND t.lpep_pickup_datetime < '2025-12-01'
+GROUP BY dz."Zone"
+ORDER BY max_tip DESC
+LIMIT 1;
+
+SELECT tz."Zone" AS pickup_zone,
+SUM(gt.total_amount) AS total_revenue
+FROM taxi_zone_lookup AS tz
+JOIN green_taxi_data AS gt
+ON tz."LocationID" = gt."PULocationID"
+WHERE gt.lpep_pickup_datetime >= '2025-11-18'
+    AND gt.lpep_pickup_datetime < '2025-11-19'
+GROUP BY tz."Zone"
+ORDER BY total_revenue DESC
+LIMIT 1;
+
 docker run -it --rm \
   -e POSTGRES_USER="root" \
   -e POSTGRES_PASSWORD="root" \
@@ -98,3 +125,5 @@ python -m pip --version
 
 docker build --no-cache -t taxi_ingest:v001 .
 docker build -t taxi_ingest:v001 .
+
+source .venv/Scripts/activate
